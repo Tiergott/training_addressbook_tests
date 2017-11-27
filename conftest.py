@@ -1,5 +1,4 @@
 import pytest
-from selenium import webdriver
 import json, random, string, os.path
 from models.addressbook_app import AddressBookApp
 from models.addressbook_db import AddressBookDB
@@ -8,9 +7,9 @@ from models.group import Group
 
 @pytest.fixture(scope="session")
 def config():
-    filename = os.path.join(os.path.dirname(os.path.abspath(__file__)), "config.json")
-    with open(filename) as f:
-        return json.load(f)
+    file_name = os.path.join(os.path.dirname(os.path.abspath(__file__)), "config.json")
+    with open(file_name) as fc:
+        return json.load(fc)
 
 
 @pytest.fixture()
@@ -29,11 +28,13 @@ def db(config):
     yield db
     db.close()
 
+
 @pytest.fixture()
 def login_admin(app, config):
     app.login(username=config["web"]["user"], password=config["web"]["password"])
     yield
     app.logout()
+
 
 @pytest.fixture()
 def check_groups_exist(app, login_admin):
@@ -62,6 +63,7 @@ groups_list += [Group(random_string(50), random_string(50), random_string(20))
                 ]
 
 resr_list = [str(g) for g in groups_list]
+
 
 @pytest.fixture(params=groups_list, ids=resr_list)
 def group(request):
